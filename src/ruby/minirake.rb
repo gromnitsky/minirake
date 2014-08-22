@@ -6,21 +6,15 @@ def mruby?
   RUBY_ENGINE == 'mruby'
 end
 
-if mruby?
-  require 'mruby-io'
-  require 'mruby-file-stat'
-  require 'mruby-getoptlong'
-  require 'mruby-env'
-  require 'mruby-regexp-pcre'
-  require 'mruby-dir'
-  require 'mruby-process'
+unless mruby?
+  require 'getoptlong'
+  require 'fileutils'
 end
 
-def my_load name
-  if mruby?
-    load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
-  else
-    load name
+module MiniRake
+  module Meta
+    VERSION = '0.0.1'
+    NAME = 'minirake'
   end
 end
 
@@ -71,7 +65,10 @@ class String
   end
 end
 
+
+
 module MiniRake
+
   class Task
     TASKS = Hash.new
     RULES = Array.new
@@ -134,8 +131,7 @@ module MiniRake
       prerequisites.collect { |n| Task[n].timestamp }.max || Time.now
     end
 
-    # Class Methods ----------------------------------------------------
-
+    # Class Methods
     class << self
 
       # Clear the task list.  This cause rake to immediately forget all
@@ -238,9 +234,12 @@ module MiniRake
       end
     end
   end
+end
 
+
 
-  ######################################################################
+module MiniRake
+
   class FileTask < Task
     # Is this file task needed?  Yes if it doesn't exist, or if its time
     # stamp is out of date.
@@ -303,48 +302,44 @@ module MiniRake
   end
 end
 
-Rake = MiniRake
 extend MiniRake::DSL
 
+
 
-######################################################################
-# Task Definition Functions ...
-
-######################################################################
-# Rake main application object.  When invoking +rake+ from the command
-# line, a RakeApp object is created and run.
-#
-class RakeApp
+# Rake main application object.  When invoking minirake from the command
+# line, a App object is created and run.
+class App
   RAKEFILES = ['rakefile', 'Rakefile']
 
   OPTIONS = [
-    ['--dry-run',  '-n', GetoptLong::NO_ARGUMENT,
-      "Do a dry run without executing actions."],
-    ['--help',     '-H', GetoptLong::NO_ARGUMENT,
-      "Display this help message."],
-    ['--libdir',   '-I', GetoptLong::REQUIRED_ARGUMENT,
-      "Include LIBDIR in the search path for required modules."],
-    ['--nosearch', '-N', GetoptLong::NO_ARGUMENT,
-      "Do not search parent directories for the Rakefile."],
-    ['--quiet',    '-q', GetoptLong::NO_ARGUMENT,
-      "Do not log messages to standard output (default)."],
-    ['--rakefile', '-f', GetoptLong::REQUIRED_ARGUMENT,
-      "Use FILE as the rakefile."],
-    ['--require',  '-r', GetoptLong::REQUIRED_ARGUMENT,
-      "Require MODULE before executing rakefile."],
-    ['--tasks',    '-T', GetoptLong::NO_ARGUMENT,
-      "Display the tasks and dependencies, then exit."],
-    ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
-      "Turn on invoke/execute tracing."],
-    ['--usage',    '-h', GetoptLong::NO_ARGUMENT,
-      "Display usage."],
-    ['--verbose',  '-v', GetoptLong::NO_ARGUMENT,
-      "Log message to standard output."],
-    ['--directory', '-C', GetoptLong::REQUIRED_ARGUMENT,
-      "Change executing directory of rakefiles."]
-  ]
+             ['--dry-run',  '-n', GetoptLong::NO_ARGUMENT,
+              "Do a dry run without executing actions."],
+             ['--help',     '-H', GetoptLong::NO_ARGUMENT,
+              "Display this help message."],
+             ['--libdir',   '-I', GetoptLong::REQUIRED_ARGUMENT,
+              "Include LIBDIR in the search path for required modules."],
+             ['--nosearch', '-N', GetoptLong::NO_ARGUMENT,
+              "Do not search parent directories for the Rakefile."],
+             ['--quiet',    '-q', GetoptLong::NO_ARGUMENT,
+              "Do not log messages to standard output."],
+             ['--rakefile', '-f', GetoptLong::REQUIRED_ARGUMENT,
+              "Use FILE as the rakefile."],
+             ['--require',  '-r', GetoptLong::REQUIRED_ARGUMENT,
+              "Require MODULE before executing rakefile."],
+             ['--tasks',    '-T', GetoptLong::NO_ARGUMENT,
+              "Display the tasks and dependencies, then exit."],
+             ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
+              "Turn on invoke/execute tracing."],
+             ['--usage',    '-h', GetoptLong::NO_ARGUMENT,
+              "Display usage."],
+             ['--verbose',  '-v', GetoptLong::NO_ARGUMENT,
+              "Log message to standard output (default)."],
+             ['--version', '-V', GetoptLong::NO_ARGUMENT,
+              'Display the program version.'],
+             ['--directory', '-C', GetoptLong::REQUIRED_ARGUMENT,
+              "Change executing directory of rakefiles."]
+            ]
 
-  # Create a RakeApp object.
   def initialize
     @rakefile = nil
     @nosearch = false
@@ -364,13 +359,13 @@ class RakeApp
 
   # Display the program usage line.
   def usage
-      puts "rake [-f rakefile] {options} targets..."
+    puts "rake [-f rakefile] {options} targets..."
   end
 
   # Display the rake command line help.
   def help
     usage
-    puts "RUBY_ENGINE: #{RUBY_ENGINE}"
+    puts "Ruby: #{RUBY_ENGINE}/#{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
     puts "Options are ..."
     puts
     OPTIONS.sort.each do |long, short, mode, desc|
@@ -428,7 +423,7 @@ class RakeApp
     when '--verbose'
       $verbose = true
     when '--version'
-      puts "rake, version #{RAKEVERSION}"
+      puts "#{MiniRake::Meta::NAME}, version #{MiniRake::Meta::VERSION}"
       exit
     when '--directory'
       Dir.chdir value
@@ -439,12 +434,20 @@ class RakeApp
 
   # Read and handle the command line options.
   def handle_options
-    $verbose = false
+    $verbose = true
     opts = GetoptLong.new(*command_line_options)
     opts.each { |opt, value| do_option(opt, value) }
   end
 
-  # Run the +rake+ application.
+  def self.myload name
+    if mruby?
+      load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
+    else
+      load name
+    end
+  end
+
+  # Run the minirake application.
   def run
     handle_options
     begin
@@ -466,7 +469,7 @@ class RakeApp
       end
       puts "(in #{Dir.pwd})"
       $rakefile = @rakefile
-      my_load @rakefile
+      App.myload @rakefile      # BOOM!
       if $show_tasks
         display_tasks
       else
@@ -488,4 +491,6 @@ class RakeApp
   end
 end
 
-RakeApp.new.run
+
+
+App.new.run
