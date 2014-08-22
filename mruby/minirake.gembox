@@ -1,0 +1,23 @@
+MRuby::GemBox.new do |conf|
+  # minirake
+  conf.gem :git => 'git@github.com:iij/mruby-io.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:rubiojr/mruby-getoptlong.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:ksss/mruby-file-stat.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-env.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-regexp-pcre.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-process.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-dir.git', :branch => 'master'
+
+  conf.gem :git => 'git@github.com:iij/mruby-digest.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-errno.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:ksss/mruby-ostruct.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-pack.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-tempfile.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:AndrewBelt/mruby-yaml.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:iij/mruby-iijson.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:mattn/mruby-thread.git', :branch => 'master'
+
+  # this must be the last entry, otherwise all gems below it will be
+  # compiled as .so libs.
+  conf.gem :git => 'git@github.com:mattn/mruby-require.git', :branch => 'master'
+end
