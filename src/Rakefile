@@ -1,30 +1,29 @@
 includes = '-I ~/Desktop/m/mruby/include'
 static = '~/Desktop/m/mruby/build/host/lib/libmruby.a'
-libs = '-lm -lcrypto'
+libs = '-lm -ldl'
 mrbc = '~/Desktop/m/mruby/build/host/bin/mrbc'
 
 task :default => ['minirake']
 
 obj = []
 Dir.foreach '.' do |idx|
-  obj << idx.sub(/\.c$/, '.o') if idx =~ /\.c$/
+  obj << idx.ext('.o') if idx =~ /\.c$/
+end
+
+file 'minirake' => obj.push('bytecode.o') do |t|
+  sh "cc -Wall #{t.prerequisites.join ' '} #{static} -o #{t.name} #{libs}"
 end
 
 file 'bytecode.c' => ['ruby/minirake.rb'] do |t|
   sh "#{mrbc} -B bytecode -o #{t.name} #{t.prerequisites[0]}"
 end
 
-file 'main.o' => ['bytecode.o']
-
 rule '.o' => ['.c'] do |t|
-  sh "cc #{t.source} -c -o #{t.name} #{includes}"
+  sh "cc -Wall #{t.source} -c -o #{t.name} #{includes}"
 end
 
-file 'minirake' => ['bytecode.o'].concat(obj) do |t|
-  sh "cc main.o #{static} -o #{t.name} #{libs}"
-end
+
 
 task :clean do
-  log "hello2"
   sh "rm -f bytecode.[co] #{obj.join ' '} minirake"
 end

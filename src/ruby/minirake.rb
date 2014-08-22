@@ -2,12 +2,19 @@
 # Copyright (c) 2003 Jim Weirich
 # License: MIT-LICENSE
 #
-# Extracted form mruby dist & tweaked for mruby 1.0.0.
-#
-# iij/mruby must be compiled with:
-#
-# mruby-getoptlong
-# mruby-file-stat
+# Extracted form mruby/mruby.
+
+require 'mruby-io'
+require 'mruby-file-stat'
+require 'mruby-getoptlong'
+require 'mruby-env'
+require 'mruby-regexp-pcre'
+require 'mruby-dir'
+require 'mruby-process'
+
+def my_load name
+  load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
+end
 
 class String
   def ext(newext='')
@@ -319,8 +326,6 @@ class RakeApp
       "Require MODULE before executing rakefile."],
     ['--tasks',    '-T', GetoptLong::NO_ARGUMENT,
       "Display the tasks and dependencies, then exit."],
-    ['--pull-gems','-p', GetoptLong::NO_ARGUMENT,
-      "Pull all git mrbgems."],
     ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
       "Turn on invoke/execute tracing."],
     ['--usage',    '-h', GetoptLong::NO_ARGUMENT,
@@ -407,8 +412,6 @@ class RakeApp
       require value
     when '--tasks'
       $show_tasks = true
-    when '--pull-gems'
-      $pull_gems = true
     when '--trace'
       $trace = true
     when '--usage'
@@ -429,7 +432,6 @@ class RakeApp
   # Read and handle the command line options.
   def handle_options
     $verbose = false
-    $pull_gems = false
     opts = GetoptLong.new(*command_line_options)
     opts.each { |opt, value| do_option(opt, value) }
   end
@@ -456,7 +458,7 @@ class RakeApp
       end
       puts "(in #{Dir.pwd})"
       $rakefile = @rakefile
-      load @rakefile
+      my_load @rakefile
       if $show_tasks
         display_tasks
       else

@@ -1,1 +1,3 @@
 bytecode.c
+*.o
+minirake
