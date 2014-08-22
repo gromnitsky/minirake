@@ -1,19 +1,27 @@
 # Original is https://github.com/jimweirich/rake/
 # Copyright (c) 2003 Jim Weirich
 # License: MIT-LICENSE
-#
-# Extracted form mruby/mruby.
 
-require 'mruby-io'
-require 'mruby-file-stat'
-require 'mruby-getoptlong'
-require 'mruby-env'
-require 'mruby-regexp-pcre'
-require 'mruby-dir'
-require 'mruby-process'
+def mruby?
+  RUBY_ENGINE == 'mruby'
+end
+
+if mruby?
+  require 'mruby-io'
+  require 'mruby-file-stat'
+  require 'mruby-getoptlong'
+  require 'mruby-env'
+  require 'mruby-regexp-pcre'
+  require 'mruby-dir'
+  require 'mruby-process'
+end
 
 def my_load name
-  load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
+  if mruby?
+    load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
+  else
+    load name
+  end
 end
 
 class String
@@ -362,7 +370,7 @@ class RakeApp
   # Display the rake command line help.
   def help
     usage
-    puts
+    puts "RUBY_ENGINE: #{RUBY_ENGINE}"
     puts "Options are ..."
     puts
     OPTIONS.sort.each do |long, short, mode, desc|
