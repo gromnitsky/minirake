@@ -1,0 +1,27 @@
+task :default => ['mruby', 'mruby/build_config.rb', :compile]
+
+# clone repo
+file 'mruby' do |t|
+  sh "git clone git@github.com:mruby/mruby.git"
+  touch 'minirake.gembox'
+end
+
+patch="conf.gembox '#{File.realpath('minirake.gembox').ext ''}'"
+
+# setup
+file 'mruby/build_config.rb' => 'minirake.gembox' do |t|
+  sh "sed -i \"/conf.gembox 'default'/a #{patch}\" #{t.name}"
+end
+
+task :compile do
+  Dir.chdir 'mruby' do
+    sh "make clean"
+    sh "make"
+  end
+end
+
+
+
+task :clean do
+  sh "rm -rf mruby"
+end

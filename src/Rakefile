@@ -1,7 +1,7 @@
-includes = '-I ~/Desktop/m/mruby/include'
-static = '~/Desktop/m/mruby/build/host/lib/libmruby.a'
+includes = '-I ../mruby/mruby/include'
+static = '../mruby/mruby/build/host/lib/libmruby.a'
 libs = '-lm -ldl -lyaml -lpthread -lcrypto'
-mrbc = '~/Desktop/m/mruby/build/host/bin/mrbc'
+mrbc = '../mruby/mruby/bin/mrbc'
 
 task :default => ['minirake']
 
