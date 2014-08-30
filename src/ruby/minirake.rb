@@ -13,7 +13,7 @@ end
 
 module MiniRake
   module Meta
-    VERSION = '0.0.1'
+    VERSION = '0.0.2'
     NAME = 'minirake'
   end
 end
@@ -63,6 +63,44 @@ class String
     end
     result
   end
+
+  def pathmap_partial(n)
+    dirs = File.dirname(self).pathmap_explode
+    partial_dirs =
+      if n > 0
+        dirs[0...n]
+      elsif n < 0
+        dirs.reverse[0...-n].reverse
+      else
+        "."
+      end
+    File.join(partial_dirs)
+  end
+
+  def pathmap_replace(patterns, &block)
+    result = self
+    patterns.split(';').each do |pair|
+      pattern, replacement = pair.split(',')
+      pattern = Regexp.new(pattern)
+      if replacement == '*' && block_given?
+        result = result.sub(pattern, &block)
+      elsif replacement
+        result = result.sub(pattern, replacement)
+      else
+        result = result.sub(pattern, '')
+      end
+    end
+    result
+  end
+
+  def pathmap_explode
+    head, tail = File.split(self)
+    return [self] if head == self
+    return [tail] if head == '.' || tail == '/'
+    return [head, tail] if head == '/'
+    return head.pathmap_explode + [tail]
+  end
+
 end
 
 
