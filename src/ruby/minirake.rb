@@ -441,7 +441,7 @@ class App
 
   def self.myload name
     if mruby?
-      load [File.dirname(File.dirname(File.realpath __FILE__)), File.basename(name)].join '/'
+      load File.realpath name
     else
       load name
     end
