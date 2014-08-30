@@ -22,7 +22,9 @@ This is a required step before creating minirake executable:
 	$ (cd mruby && rake)
 
 It will clone mruby repo, add a link to our custom gembox to it & build
-mruby. Then
+mruby. If build fails, edit `Rakefile` to remove/add a mruby commit id.
+
+Then
 
 	$ cd src
 	$ rake

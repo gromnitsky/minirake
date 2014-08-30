@@ -3,6 +3,9 @@ task :default => ['mruby', 'mruby/build_config.rb', :compile]
 # clone repo
 file 'mruby' do |t|
   sh "git clone git@github.com:mruby/mruby.git"
+  Dir.chdir 'mruby' do
+    sh "git checkout c219c2a15eec04040144ba5cd478b5c5dff14f65"
+  end
   touch 'minirake.gembox'
 end
 

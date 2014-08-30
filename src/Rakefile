@@ -1,14 +1,11 @@
 includes = '-I ../mruby/mruby/include'
 static = '../mruby/mruby/build/host/lib/libmruby.a'
-libs = '-lm -ldl -lyaml -lpthread -lcrypto'
+libs = '-lm -ldl -lyaml -lpthread'
 mrbc = '../mruby/mruby/bin/mrbc'
 
 task :default => ['minirake']
 
-obj = []
-Dir.foreach '.' do |idx|
-  obj << idx.ext('.o') if idx =~ /\.c$/
-end
+obj = Dir.glob('*.c').map {|i| i.ext '.o'}
 
 file 'minirake' => obj.push('bytecode.o') do |t|
   sh "cc -Wall #{t.prerequisites.join ' '} #{static} -o #{t.name} #{libs}"
