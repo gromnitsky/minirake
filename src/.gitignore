@@ -1,3 +1,4 @@
 bytecode.*.c
 *.o
 minirake
+deps.rb

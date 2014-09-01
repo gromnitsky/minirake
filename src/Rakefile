@@ -34,5 +34,5 @@ end
 
 
 task :clean do
-  sh "rm -f #{obj.join ' '} deps.rb minirake"
+  sh "rm -f #{obj.join ' '} bytecode.*.c deps.rb minirake"
 end
