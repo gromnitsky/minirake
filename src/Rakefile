@@ -2,17 +2,29 @@ includes = '-I ../mruby/mruby/include'
 static = '../mruby/mruby/build/host/lib/libmruby.a'
 libs = '-lm -ldl -lyaml -lpthread'
 mrbc = '../mruby/mruby/bin/mrbc'
+rreqdeps = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_deps'
+rreqcat = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_cat'
 
 task :default => ['minirake']
 
 obj = Dir.glob('*.c').map {|i| i.ext '.o'}
 
-file 'minirake' => obj.push('bytecode.o') do |t|
+
+
+file 'minirake' => obj.concat(['bytecode.deps.o', 'bytecode.main.o']) do |t|
   sh "cc -Wall #{t.prerequisites.join ' '} #{static} -o #{t.name} #{libs}"
 end
 
-file 'bytecode.c' => ['ruby/minirake.rb'] do |t|
-  sh "#{mrbc} -B bytecode -o #{t.name} #{t.prerequisites[0]}"
+file 'bytecode.deps.c' => ['deps.rb'] do |t|
+  sh "#{mrbc} -g -B bytecode_deps -o #{t.name} #{t.prerequisites[0]}"
+end
+
+file 'deps.rb' do |t|
+  sh "#{rreqdeps} ruby/main.rb | #{rreqcat} -o #{t.name}"
+end
+
+file 'bytecode.main.c' => ['ruby/main.rb'] do |t|
+  sh "#{mrbc} -g -B bytecode_main -o #{t.name} #{t.prerequisites[0]}"
 end
 
 rule '.o' => ['.c'] do |t|
@@ -22,5 +34,5 @@ end
 
 
 task :clean do
-  sh "rm -f bytecode.[co] #{obj.join ' '} minirake"
+  sh "rm -f #{obj.join ' '} deps.rb minirake"
 end

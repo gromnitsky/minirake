@@ -6,7 +6,8 @@
 #include <mruby/dump.h>
 #include <mruby/array.h>
 
-extern uint8_t bytecode[];
+extern uint8_t bytecode_deps[];
+extern uint8_t bytecode_main[];
 
 void
 create_argv(mrb_state *mrb, int argc, char **argv)
@@ -20,7 +21,7 @@ create_argv(mrb_state *mrb, int argc, char **argv)
 	mrb_define_global_const(mrb, "ARGV", ARGV);
 
 	mrb_sym zero_sym = mrb_intern_lit(mrb, "$0");
-    mrb_gv_set(mrb, zero_sym, mrb_str_new_cstr(mrb, argv[0]));
+	mrb_gv_set(mrb, zero_sym, mrb_str_new_cstr(mrb, argv[0]));
 }
 
 int
@@ -31,15 +32,21 @@ main(int argc, char **argv)
 	mrb_state *mrb = mrb_open();
 	create_argv(mrb, argc, argv);
 
-	// read & execute compiled symbols
-	mrb_irep *irep = mrb_read_irep(mrb, bytecode);
-	mrb_value r = mrb_run(mrb, mrb_proc_new(mrb, irep), mrb_top_self(mrb));
+	uint8_t *list[] = {bytecode_deps, bytecode_main, NULL};
+	uint8_t **p = list;
+	while (*p) {
+		// read & execute compiled symbols
+		mrb_irep *irep = mrb_read_irep(mrb, *p);
+		mrb_value r = mrb_run(mrb, mrb_proc_new(mrb, irep), mrb_top_self(mrb));
 
-	// check for raised exceptions
-	if (mrb->exc) {
-		r = mrb_funcall(mrb, mrb_obj_value(mrb->exc), "inspect", 0);
-		fprintf(stderr, "Error: %s\n", RSTRING_PTR(r));
-		status = 1;
+		// check for raised exceptions
+		if (mrb->exc) {
+			r = mrb_funcall(mrb, mrb_obj_value(mrb->exc), "inspect", 0);
+			fprintf(stderr, "Error: %s\n", RSTRING_PTR(r));
+			status = 1;
+		}
+
+		++p;
 	}
 
 	mrb_close(mrb);

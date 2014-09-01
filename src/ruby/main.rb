@@ -9,98 +9,10 @@ end
 unless mruby?
   require 'getoptlong'
   require 'fileutils'
-end
 
-module MiniRake
-  module Meta
-    VERSION = '0.0.2'
-    NAME = 'minirake'
-  end
-end
-
-class String
-  def ext(newext='')
-    return self.dup if ['.', '..'].include? self
-    if newext != ''
-      newext = (newext =~ /^\./) ? newext : ("." + newext)
-    end
-    self.chomp(File.extname(self)) << newext
-  end
-
-  def pathmap(spec=nil, &block)
-    return self if spec.nil?
-    result = ''
-    spec.scan(/%\{[^}]*\}-?\d*[sdpfnxX%]|%-?\d+d|%.|[^%]+/) do |frag|
-      case frag
-      when '%f'
-        result << File.basename(self)
-      when '%n'
-        result << File.basename(self).ext
-      when '%d'
-        result << File.dirname(self)
-      when '%x'
-        result << File.extname(self)
-      when '%X'
-        result << self.ext
-      when '%p'
-        result << self
-      when '%s'
-        result << (File::ALT_SEPARATOR || File::SEPARATOR)
-      when '%-'
-        # do nothing
-      when '%%'
-        result << "%"
-      when /%(-?\d+)d/
-        result << pathmap_partial($1.to_i)
-      when /^%\{([^}]*)\}(\d*[dpfnxX])/
-        patterns, operator = $1, $2
-        result << pathmap('%' + operator).pathmap_replace(patterns, &block)
-      when /^%/
-        raise ArgumentError, "Unknown pathmap specifier #{frag} in '#{spec}'"
-      else
-        result << frag
-      end
-    end
-    result
-  end
-
-  def pathmap_partial(n)
-    dirs = File.dirname(self).pathmap_explode
-    partial_dirs =
-      if n > 0
-        dirs[0...n]
-      elsif n < 0
-        dirs.reverse[0...-n].reverse
-      else
-        "."
-      end
-    File.join(partial_dirs)
-  end
-
-  def pathmap_replace(patterns, &block)
-    result = self
-    patterns.split(';').each do |pair|
-      pattern, replacement = pair.split(',')
-      pattern = Regexp.new(pattern)
-      if replacement == '*' && block_given?
-        result = result.sub(pattern, &block)
-      elsif replacement
-        result = result.sub(pattern, replacement)
-      else
-        result = result.sub(pattern, '')
-      end
-    end
-    result
-  end
-
-  def pathmap_explode
-    head, tail = File.split(self)
-    return [self] if head == self
-    return [tail] if head == '.' || tail == '/'
-    return [head, tail] if head == '/'
-    return head.pathmap_explode + [tail]
-  end
-
+  # this will be processed by ruby_require_deps
+  require_relative 'ext/string'
+  require_relative 'meta'
 end
 
 
@@ -166,7 +78,7 @@ module MiniRake
     # their time stamp.  Other tasks can be more sophisticated.
     def timestamp
       prerequisites = @prerequisites.collect{ |n| n.is_a?(Proc) ? n.call(name) : n }.flatten
-      prerequisites.collect { |n| Task[n].timestamp }.max || Time.now
+      prerequisites.collect { |n| Task[n].timestamp }.max || Time.now.to_i
     end
 
     # Class Methods
