@@ -2,8 +2,10 @@ includes = '-I ../mruby/mruby/include'
 static = '../mruby/mruby/build/host/lib/libmruby.a'
 libs = '-lm -ldl -lyaml -lpthread'
 mrbc = '../mruby/mruby/bin/mrbc'
-rreqdeps = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_deps'
-rreqcat = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_cat'
+#rreqdeps = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_deps'
+#rreqcat = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_cat'
+rreqdeps = 'ruby_require_deps'
+rreqcat = 'ruby_require_cat'
 
 task :default => ['minirake']
 
