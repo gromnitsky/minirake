@@ -61,7 +61,6 @@ Then
 
 ## BUGS
 
-* `FileList` is missing (use plain `Dir.glob` as a replacement).
 * `FileUtils` is missing (use `sh "blah-blah"`).
 * No parallel jobs.
 * No multitask support.

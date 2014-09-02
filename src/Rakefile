@@ -7,9 +7,9 @@ archive = '../mruby/mruby/build/host/lib/libmruby.a'
 
 mrbc = '../mruby/mruby/bin/mrbc'
 
-obj = Dir.glob('*.c').map {|i| i.ext '.o'}
+obj = FileList['*.c'].ext '.o'
 obj.concat ['bytecode.deps.o', 'bytecode.main.o']
-rdeps = Dir.glob('ruby/**/*.rb').delete_if {|i| i.end_with? '/main.rb' }
+rdeps = FileList['ruby/**/*.rb']
 
 # check env
 [archive, mrbc].each do |idx|

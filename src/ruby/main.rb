@@ -15,7 +15,11 @@ unless mruby?
   # this will be processed by ruby_require_deps
   require_relative 'ext/string'
   require_relative 'meta'
+  require_relative 'cloneable'
+  require_relative 'file_list'
 end
+
+FileList = MiniRake::FileList
 
 
 
