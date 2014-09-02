@@ -22,7 +22,8 @@ end
 $conf = {
   chdir: false,
   verbose: true,
-  dryrun: false
+  dryrun: false,
+  trace: false
 }
 
 module MiniRake
@@ -60,7 +61,7 @@ module MiniRake
 
     # Invoke the task if it is needed.  Prerequites are invoked first.
     def invoke
-      puts "Invoke #{name} (already=[#{@already_invoked}], needed=[#{needed?}])" if $trace
+      puts "Invoke #{name} (already=[#{@already_invoked}], needed=[#{needed?}])" if $conf[:trace]
       return if @already_invoked
       @already_invoked = true
       prerequisites = @prerequisites.collect{ |n| n.is_a?(Proc) ? n.call(name) : n }.flatten
@@ -70,7 +71,7 @@ module MiniRake
 
     # Execute the actions associated with this task.
     def execute
-      puts "Execute #{name}" if $trace
+      puts "Execute #{name}" if $conf[:trace]
       self.class.enhance_with_matching_rule(name) if @actions.empty?
       unless $conf[:dryrun]
         @actions.each { |act| act.call(self) }
@@ -245,7 +246,7 @@ module MiniRake
 
     # Write a message to standard out if verbose is enabled.
     def log(msg)
-      print "  " if $trace && $conf[:verbose]
+      print "  " if $conf[:trace] && $conf[:verbose]
       puts msg if $conf[:verbose]
     end
 
@@ -343,7 +344,7 @@ class App
     case opt
     when '--dry-run'
       $conf[:dryrun] = true
-      $trace = true
+      $conf[:trace] = true
     when '--help'
       help
       exit
@@ -361,7 +362,7 @@ class App
     when '--prereqs'
       @show_tasks = true
     when '--trace'
-      $trace = true
+      $conf[:trace] = true
     when '--verbose'
       # $conf[:verbose] is true by default
     when '--version'
@@ -425,7 +426,7 @@ class App
     rescue Exception => ex
       puts "rake aborted!"
       puts ex.message
-      if $trace
+      if $conf[:trace]
         puts ex.backtrace.join("\n")
       else
         puts ex.backtrace.find {|str| str =~ /#{@rakefile}/ } || ""
