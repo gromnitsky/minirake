@@ -22,6 +22,7 @@ end
 $conf = {
   chdir: false,
   verbose: true,
+  dryrun: false
 }
 
 module MiniRake
@@ -71,7 +72,7 @@ module MiniRake
     def execute
       puts "Execute #{name}" if $trace
       self.class.enhance_with_matching_rule(name) if @actions.empty?
-      unless $dryrun
+      unless $conf[:dryrun]
         @actions.each { |act| act.call(self) }
       end
     end
@@ -341,7 +342,7 @@ class App
   def do_option(opt, value)
     case opt
     when '--dry-run'
-      $dryrun = true
+      $conf[:dryrun] = true
       $trace = true
     when '--help'
       help
