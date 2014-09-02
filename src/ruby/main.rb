@@ -23,7 +23,10 @@ $conf = {
   chdir: false,
   verbose: true,
   dryrun: false,
-  trace: false
+  trace: false,
+  debug: {
+    vars: {}
+  }
 }
 
 module MiniRake
@@ -229,6 +232,7 @@ module MiniRake
 
     # Declare a set of files tasks to create the given directories on
     # demand.
+    # FIXME
     def directory(dir)
       path = []
       Sys.split_all(dir).each do |p|
@@ -257,6 +261,10 @@ module MiniRake
     end
 
     def desc(text)
+    end
+
+    def ec07bc vars
+      $conf[:debug][:vars] = vars
     end
   end
 end
@@ -294,13 +302,16 @@ class App
              ['--version', '-V', GetoptLong::NO_ARGUMENT,
               'Display the program version.'],
              ['--directory', '-C', GetoptLong::REQUIRED_ARGUMENT,
-              "Change executing directory of rakefiles."]
+              "Change executing directory of rakefiles."],
+             ['--printvar', '-A', GetoptLong::REQUIRED_ARGUMENT,
+              "Print minirake's idea of the value of VAR, then exit."]
             ]
 
   def initialize
     @rakefile = nil
     @nosearch = false
     @show_tasks = false
+    @printvar = []
   end
 
   # True if one of the files in RAKEFILES is in the current directory.
@@ -369,6 +380,8 @@ class App
     when '--directory'
       Dir.chdir value
       $conf[:chdir] = true
+    when '--printvar'
+      @printvar << value
     end
   end
 
@@ -378,6 +391,19 @@ class App
     opts.each { |opt, value| do_option(opt, value) }
   rescue GetoptLong::Error
     # GetoptLong will still complain independently
+  end
+
+  def printvar
+    if $conf[:debug][:vars].size == 0
+      $stderr.puts "Put the magick line below in the end of a Rakefile & rerun minirake:"
+      $stderr.puts
+      $stderr.puts 'v={};local_variables[0..-2].each{|i|v[i]=eval(i.to_s)};ec07bc v rescue 1'
+      exit 1
+    end
+
+    @printvar.each do |var|
+      puts "#{var} = #{$conf[:debug][:vars][var.to_sym].inspect}"
+    end
   end
 
   def self.myload name
@@ -415,6 +441,8 @@ class App
 
       if @show_tasks
         display_tasks
+      elsif @printvar.size != 0
+        printvar
       else
         tasks.push("default") if tasks.size == 0
         tasks.each do |task_name|
