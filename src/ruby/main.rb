@@ -232,13 +232,13 @@ module MiniRake
 
     # Declare a set of files tasks to create the given directories on
     # demand.
-    # FIXME
-    def directory(dir)
+    def directory dir
       path = []
-      Sys.split_all(dir).each do |p|
+      dir.split('/').each do |p|
         path << p
-        FileTask.define_task(File.join(path)) do |t|
-          Sys.makedirs(t.name)
+        # FIXME: replace with File.join after it'll be fixed in mruby-io
+        FileTask.define_task(path.join '/') do |t|
+          sh "mkdir -p #{t.name}"
         end
       end
     end
