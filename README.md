@@ -1,17 +1,17 @@
 # Mruby & Self-Contained Minirake
 
 mruby repo contains an ultra lightweight version of Rake, called
-minirake. Unfortunately it depends on full version of Ruby & doesn't
-work with mruby.
+minirake. Unfortunately it has a couple of bugs + depends on full
+version of Ruby with stdlib.
 
 I thought that it'll be nice to have rake that doesn't require any
-Rubies installed.  With mruby it's possible to produce stand-alone
+Rubies installed.  With mruby it's possible to produce standalone
 executables (albeit somewhat tricky).
 
 Original Rake has grown fat over the years & it's a quite big program
-now. Porting it to mruby is in my TODO list (near the end of it). But if
-you just want something that is syntactically nicer than GNU Make &
-works w/o any dependencies, try minirake.
+now. Porting it to mruby is a daunting task. But if you just want
+something that is syntactically nicer than GNU Make & works w/o any
+dependencies, try minirake.
 
 *This is an experiment. Do some tests before using it in your daily
  tasks.*
@@ -35,6 +35,10 @@ minirake [-f rakefile] {options} targets...
 -v, --verbose            Log message to standard output (default).
 -V, --version            Display the program version.
 ```
+
+The idea of `-A` option comes from FreeBSD make (it's actually called
+`-V` there).
+
 
 ## Requirements
 
@@ -66,6 +70,7 @@ Then
 * No parallel jobs.
 * No multitask support.
 * No namespaces.
+* Doesn't work on Windows.
 
 
 ## License
