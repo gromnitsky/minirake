@@ -337,12 +337,6 @@ class App
     end
   end
 
-  # Return a list of the command line options supported by the
-  # program.
-  def command_line_options
-    OPTIONS.collect { |lst| lst[0..-2] }
-  end
-
   # Do the option defined by +opt+ and +value+.
   def do_option(opt, value)
     case opt
@@ -375,15 +369,15 @@ class App
     when '--directory'
       Dir.chdir value
       $conf[:chdir] = true
-    else
-      raise "Unknown option: #{opt}"
     end
   end
 
   # Read and handle the command line options.
   def handle_options
-    opts = GetoptLong.new(*command_line_options)
+    opts = GetoptLong.new(*OPTIONS.collect { |idx| idx[0..-2] })
     opts.each { |opt, value| do_option(opt, value) }
+  rescue GetoptLong::Error
+    # GetoptLong will still complain independently
   end
 
   def self.myload name
