@@ -282,7 +282,7 @@ class App
               "Use FILE as the rakefile."],
              ['--require',  '-r', GetoptLong::REQUIRED_ARGUMENT,
               "Require MODULE before executing rakefile."],
-             ['--tasks',    '-T', GetoptLong::NO_ARGUMENT,
+             ['--prereqs',    '-P', GetoptLong::NO_ARGUMENT,
               "Display the tasks and dependencies, then exit."],
              ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
               "Turn on invoke/execute tracing."],
@@ -369,7 +369,7 @@ class App
       RAKEFILES << value
     when '--require'
       require value
-    when '--tasks'
+    when '--prereqs'
       $show_tasks = true
     when '--trace'
       $trace = true
