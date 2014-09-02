@@ -1,19 +1,28 @@
-task :default => ['mruby', 'mruby/build_config.rb', :compile]
+# Please keep it valid for Rake & minirake simultaneously.
+
+task :default => ['mruby', :setup, :compile]
+
+unless ENV['COMMIT']
+  # last known 'good' commit id
+  ENV['COMMIT'] = 'c219c2a15eec04040144ba5cd478b5c5dff14f65'
+end
 
 # clone repo
 file 'mruby' do |t|
   sh "git clone git@github.com:mruby/mruby.git"
-  Dir.chdir 'mruby' do
-    sh "git checkout c219c2a15eec04040144ba5cd478b5c5dff14f65"
+  if ENV['COMMIT'] != ''
+    Dir.chdir 'mruby' do
+      sh "git checkout #{ENV['COMMIT']}"
+    end
   end
-  touch 'minirake.gembox'
 end
 
-patch="conf.gembox '#{File.realpath('minirake.gembox').ext ''}'"
+patch="conf.gem :core => 'mruby-eval'; conf.gembox '#{File.realpath('minirake.gembox').ext ''}'"
 
-# setup
-file 'mruby/build_config.rb' => 'minirake.gembox' do |t|
-  sh "sed -i \"/conf.gembox 'default'/a #{patch}\" #{t.name}"
+task :setup do
+  if `grep minirake mruby/build_config.rb` == ""
+    sh "sed -i \"/conf.gembox 'default'/a #{patch}\" mruby/build_config.rb"
+  end
 end
 
 task :compile do
