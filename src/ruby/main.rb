@@ -20,7 +20,8 @@ end
 
 
 $conf = {
-  chdir: false
+  chdir: false,
+  verbose: true,
 }
 
 module MiniRake
@@ -241,15 +242,15 @@ module MiniRake
       MiniRake::Task.create_rule(args, &block)
     end
 
-    # Write a message to standard out if $verbose is enabled.
+    # Write a message to standard out if verbose is enabled.
     def log(msg)
-      print "  " if $trace && $verbose
-      puts msg if $verbose
+      print "  " if $trace && $conf[:verbose]
+      puts msg if $conf[:verbose]
     end
 
     # Run the system command +cmd+.
     def sh(cmd)
-      puts cmd if $verbose
+      puts cmd if $conf[:verbose]
       system(cmd) or raise "Command Raiseed: [#{cmd}]"
     end
 
@@ -299,6 +300,7 @@ class App
   def initialize
     @rakefile = nil
     @nosearch = false
+    @show_tasks = false
   end
 
   # True if one of the files in RAKEFILES is in the current directory.
@@ -363,21 +365,21 @@ class App
     when '--nosearch'
       @nosearch = true
     when '--quiet'
-      $verbose = false
+      $conf[:verbose] = false
     when '--rakefile'
       RAKEFILES.clear
       RAKEFILES << value
     when '--require'
       require value
     when '--prereqs'
-      $show_tasks = true
+      @show_tasks = true
     when '--trace'
       $trace = true
     when '--usage'
       usage
       exit
     when '--verbose'
-      $verbose = true
+      # $conf[:verbose] is true by default
     when '--version'
       puts "#{MiniRake::Meta::NAME}, version #{MiniRake::Meta::VERSION}"
       exit
@@ -391,7 +393,6 @@ class App
 
   # Read and handle the command line options.
   def handle_options
-    $verbose = true
     opts = GetoptLong.new(*command_line_options)
     opts.each { |opt, value| do_option(opt, value) }
   end
@@ -428,7 +429,8 @@ class App
       puts "(in #{Dir.pwd})" if $conf[:chdir]
 
       App.myload @rakefile      # BOOM!
-      if $show_tasks
+
+      if @show_tasks
         display_tasks
       else
         tasks.push("default") if tasks.size == 0
