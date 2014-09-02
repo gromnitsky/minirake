@@ -55,25 +55,23 @@ module MiniRake
     ]
 
     DELEGATING_METHODS = (ARRAY_METHODS + MUST_DEFINE - MUST_NOT_DEFINE).
-      map { |s| s.to_s }.sort.uniq
+      map { |s| s.to_sym }.sort.uniq
 
     # Now do the delegation.
     DELEGATING_METHODS.each do |sym|
       if SPECIAL_RETURN.include?(sym)
-        # FIXME: replace with class_eval as soon as it'll be implemented
-        # with strings
-        eval %{
-          def #{sym}(*args, &block)
+        class_eval {
+          define_method(sym) do |*args, &block|
             resolve
-            result = @items.send(:#{sym}, *args, &block)
+            result = @items.send(sym, *args, &block)
             FileList.new.import(result)
           end
         }
       else
-        eval %{
-          def #{sym}(*args, &block)
+        class_eval {
+          define_method(sym) do |*args, &block|
             resolve
-            result = @items.send(:#{sym}, *args, &block)
+            result = @items.send(sym, *args, &block)
             result.object_id == @items.object_id ? self : result
           end
         }
