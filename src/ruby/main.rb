@@ -138,7 +138,7 @@ module MiniRake
         if File.exist?(task_name)
           return FileTask.define_task(task_name)
         end
-        raise "Don't know how to rake #{task_name}"
+        raise "Don't know how to #{MiniRake::Meta::NAME} #{task_name}"
       end
 
       # Define a task given +args+ and an option block.  If a rule with
@@ -290,9 +290,11 @@ extend MiniRake::DSL
 
 
 
-# Rake main application object.  When invoking minirake from the command
-# line, a App object is created and run.
+# Minirake main application object.  When invoking minirake from the
+# command line, a App object is created and run.
+# FIXME: repair __FILE__
 class App
+
   RAKEFILES = ['rakefile', 'Rakefile']
 
   OPTIONS = [
@@ -449,6 +451,7 @@ class App
   # Run the minirake application.
   def run
     handle_options
+
     begin
       here = Dir.pwd
       while ! have_rakefile
@@ -484,16 +487,13 @@ class App
         end
       end
     rescue Exception => ex
-      puts "rake aborted!"
-      puts ex.message
-      if $conf[:trace]
-        puts ex.backtrace.join("\n")
-      else
-        puts ex.backtrace.find {|str| str =~ /#{@rakefile}/ } || ""
-      end
+      puts "#{MiniRake::Meta::NAME} aborted!"
+      puts ex.inspect
+      puts ex.backtrace.join("\n") if $conf[:trace]
       exit 1
     end
   end
+
 end
 
 
