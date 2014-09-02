@@ -317,8 +317,6 @@ class App
 
   def help
     puts "#{File.basename $0} [-f rakefile] {options} targets..."
-    puts "Ruby: #{RUBY_ENGINE}/#{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
-    puts "Options are ..."
     puts
     OPTIONS.sort.each do |long, short, mode, desc|
       if mode == GetoptLong::REQUIRED_ARGUMENT
@@ -326,8 +324,7 @@ class App
           long = long + "=#{$1}"
         end
       end
-      printf "  %-20s (%s)\n", long, short
-      printf "      %s\n", desc
+      printf "%s, %-20s %s\n", short, long, desc
     end
   end
 
@@ -366,7 +363,8 @@ class App
     when '--verbose'
       # $conf[:verbose] is true by default
     when '--version'
-      puts "#{MiniRake::Meta::NAME}, version #{MiniRake::Meta::VERSION}"
+      puts "#{MiniRake::Meta::NAME} #{MiniRake::Meta::VERSION}"
+      puts "#{RUBY_ENGINE} #{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
       exit
     when '--directory'
       Dir.chdir value
