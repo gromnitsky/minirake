@@ -23,6 +23,7 @@ end
 
 task :default => 'minirake'
 
+desc 'build executable'
 file 'minirake' => obj do |t|
   sh "cc #{cflags} -o #{t.name} #{t.prerequisites.join ' '} #{archive} #{libs}"
 end
@@ -45,6 +46,7 @@ end
 
 
 
+desc 'clean compiled files'
 task :clean do
   sh "rm -f #{obj.join ' '} bytecode.*.c deps.rb minirake"
 end

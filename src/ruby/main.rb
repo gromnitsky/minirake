@@ -46,12 +46,21 @@ module MiniRake
     # sythesized from a rule.
     attr_accessor :source
 
+    attr_accessor :desc
+    class << self
+      attr_accessor :last_desc
+    end
+
     # Create a task named +task_name+ with no actions or prerequisites..
     # use +enhance+ to add actions and prerequisites.
     def initialize(task_name)
       @name = task_name
       @prerequisites = []
       @actions = []
+
+      # get last defined desc, use it & clean the source
+      @desc = Task.last_desc
+      Task.last_desc = nil
     end
 
     # Enhance a task with prerequisites or actions.  Returns self.
@@ -106,6 +115,7 @@ module MiniRake
       def clear
         TASKS.clear
         RULES.clear
+        Task.last_desc = nil
       end
 
       # List of all defined tasks.
@@ -266,7 +276,8 @@ module MiniRake
       system(cmd) or raise "Command raised: [#{cmd}]"
     end
 
-    def desc(text)
+    def desc text
+      Task.last_desc = text
     end
 
     def ec07bc vars
@@ -310,7 +321,9 @@ class App
              ['--directory', '-C', GetoptLong::REQUIRED_ARGUMENT,
               "Change executing directory of rakefiles."],
              ['--printvar', '-A', GetoptLong::REQUIRED_ARGUMENT,
-              "Print minirake's idea of the value of VAR, then exit."]
+              "Print minirake's idea of the value of VAR, then exit."],
+             ['--tasks', '-T', GetoptLong::NO_ARGUMENT,
+              "Display tasks with descriptions, then exit."],
             ]
 
   def initialize
@@ -318,6 +331,7 @@ class App
     @nosearch = false
     @show_tasks = false
     @printvar = []
+    @show_desc = false
   end
 
   # True if one of the files in RAKEFILES is in the current directory.
@@ -342,14 +356,6 @@ class App
         end
       end
       printf "%s, %-20s %s\n", short, long, desc
-    end
-  end
-
-  # Display the tasks and dependencies.
-  def display_tasks
-    MiniRake::Task.tasks.each do |t|
-      puts "#{t.class} #{t.name}"
-      t.prerequisites.each { |pre| puts "    #{pre}" }
     end
   end
 
@@ -388,6 +394,8 @@ class App
       $conf[:chdir] = true
     when '--printvar'
       @printvar << value
+    when '--tasks'
+      @show_desc = true
     end
   end
 
@@ -397,6 +405,24 @@ class App
     opts.each { |opt, value| do_option(opt, value) }
   rescue GetoptLong::Error
     # GetoptLong will still complain independently
+  end
+
+  # Display the tasks and dependencies.
+  def display_tasks
+    MiniRake::Task.tasks.each do |t|
+      puts "#{t.class} #{t.name}"
+      t.prerequisites.each { |pre| puts "    #{pre}" }
+    end
+  end
+
+  # Display only tasks with desc.
+  def display_desc
+    MiniRake::Task.tasks.select do |idx|
+      idx.desc
+    end.each do |idx|
+      folded = idx.desc.scan(/\S.{0,70}\S(?=\s|$)|\S+/) # break a string into an array
+      printf "%s\n    %s\n", idx.name, folded.join("\n    ")
+    end
   end
 
   def printvar
@@ -447,6 +473,8 @@ class App
 
       if @show_tasks
         display_tasks
+      elsif @show_desc
+        display_desc
       elsif @printvar.size != 0
         printvar
       else
