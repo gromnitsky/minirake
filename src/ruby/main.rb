@@ -271,7 +271,7 @@ class App
   OPTIONS = [
              ['--dry-run',  '-n', GetoptLong::NO_ARGUMENT,
               "Do a dry run without executing actions."],
-             ['--help',     '-H', GetoptLong::NO_ARGUMENT,
+             ['--help',     '-h', GetoptLong::NO_ARGUMENT,
               "Display this help message."],
              ['--libdir',   '-I', GetoptLong::REQUIRED_ARGUMENT,
               "Include LIBDIR in the search path for required modules."],
@@ -287,8 +287,6 @@ class App
               "Display the tasks and dependencies, then exit."],
              ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
               "Turn on invoke/execute tracing."],
-             ['--usage',    '-h', GetoptLong::NO_ARGUMENT,
-              "Display usage."],
              ['--verbose',  '-v', GetoptLong::NO_ARGUMENT,
               "Log message to standard output (default)."],
              ['--version', '-V', GetoptLong::NO_ARGUMENT,
@@ -315,14 +313,8 @@ class App
     return false
   end
 
-  # Display the program usage line.
-  def usage
-    puts "rake [-f rakefile] {options} targets..."
-  end
-
-  # Display the rake command line help.
   def help
-    usage
+    puts "#{File.basename $0} [-f rakefile] {options} targets..."
     puts "Ruby: #{RUBY_ENGINE}/#{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
     puts "Options are ..."
     puts
@@ -375,9 +367,6 @@ class App
       @show_tasks = true
     when '--trace'
       $trace = true
-    when '--usage'
-      usage
-      exit
     when '--verbose'
       # $conf[:verbose] is true by default
     when '--version'
