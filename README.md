@@ -30,6 +30,7 @@ minirake [-f rakefile] {options} targets...
 -q, --quiet              Do not log messages to standard output.
 -f, --rakefile=FILE      Use FILE as the rakefile.
 -r, --require=MODULE     Require MODULE before executing rakefile.
+-T, --tasks              Display tasks with descriptions, then exit.
 -t, --trace              Turn on invoke/execute tracing.
 -v, --verbose            Log message to standard output (default).
 -V, --version            Display the program version.
@@ -64,7 +65,7 @@ Then
 * `FileUtils` is missing (use `sh "blah-blah"`).
 * No parallel jobs.
 * No multitask support.
-* `desc` is a no-op.
+* No namespaces.
 
 
 ## License
