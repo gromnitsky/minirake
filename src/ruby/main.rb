@@ -257,7 +257,9 @@ module MiniRake
     # Run the system command +cmd+.
     def sh(cmd)
       puts cmd if $conf[:verbose]
-      system(cmd) or raise "Command Raiseed: [#{cmd}]"
+
+      return if $conf[:dryrun]
+      system(cmd) or raise "Command raised: [#{cmd}]"
     end
 
     def desc(text)
