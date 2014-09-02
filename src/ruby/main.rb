@@ -1,6 +1,8 @@
 # Original is https://github.com/jimweirich/rake/
 # Copyright (c) 2003 Jim Weirich
 # License: MIT-LICENSE
+#
+# This is a fork of mruby minirake.
 
 def mruby?
   RUBY_ENGINE == 'mruby'
@@ -16,6 +18,10 @@ unless mruby?
 end
 
 
+
+$conf = {
+  chdir: false
+}
 
 module MiniRake
 
@@ -377,6 +383,7 @@ class App
       exit
     when '--directory'
       Dir.chdir value
+      $conf[:chdir] = true
     else
       raise "Unknown option: #{opt}"
     end
@@ -408,6 +415,7 @@ class App
           raise "No Rakefile found (looking for: #{RAKEFILES.join(', ')})"
         end
         here = Dir.pwd
+        $conf[:chdir] = true
       end
       tasks = []
       ARGV.each do |task_name|
@@ -417,8 +425,8 @@ class App
           tasks << task_name
         end
       end
-      puts "(in #{Dir.pwd})"
-      $rakefile = @rakefile
+      puts "(in #{Dir.pwd})" if $conf[:chdir]
+
       App.myload @rakefile      # BOOM!
       if $show_tasks
         display_tasks
