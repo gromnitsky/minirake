@@ -1,28 +1,38 @@
-includes = '-I ../mruby/mruby/include'
-static = '../mruby/mruby/build/host/lib/libmruby.a'
-libs = '-lm -ldl -lyaml -lpthread'
-mrbc = '../mruby/mruby/bin/mrbc'
-#rreqdeps = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_deps'
-#rreqcat = '~/lib/software/example/ruby/ruby_require_inline/bin/ruby_require_cat'
-rreqdeps = 'ruby_require_deps'
-rreqcat = 'ruby_require_cat'
+# Please keep it valid for Rake & minirake simultaneously.
 
-task :default => ['minirake']
+libs = '-lm -ldl -lyaml -lpthread'
+include_dirs = '-I ../mruby/mruby/include'
+cflags = "-Wall #{include_dirs}"
+archive = '../mruby/mruby/build/host/lib/libmruby.a'
+
+mrbc = '../mruby/mruby/bin/mrbc'
 
 obj = Dir.glob('*.c').map {|i| i.ext '.o'}
+obj.concat ['bytecode.deps.o', 'bytecode.main.o']
+rdeps = Dir.glob('ruby/**/*.rb').delete_if {|i| i.end_with? '/main.rb' }
+
+# check env
+[archive, mrbc].each do |idx|
+  unless File.exist? idx
+    $stderr.puts "mruby src is missing: #{idx} not found"
+    exit 1
+  end
+end
 
 
 
-file 'minirake' => obj.concat(['bytecode.deps.o', 'bytecode.main.o']) do |t|
-  sh "cc -Wall #{t.prerequisites.join ' '} #{static} -o #{t.name} #{libs}"
+task :default => 'minirake'
+
+file 'minirake' => obj do |t|
+  sh "cc #{cflags} -o #{t.name} #{t.prerequisites.join ' '} #{archive} #{libs}"
 end
 
 file 'bytecode.deps.c' => ['deps.rb'] do |t|
   sh "#{mrbc} -g -B bytecode_deps -o #{t.name} #{t.prerequisites[0]}"
 end
 
-file 'deps.rb' do |t|
-  sh "#{rreqdeps} ruby/main.rb | #{rreqcat} -o #{t.name}"
+file 'deps.rb' => rdeps do |t|
+  sh "ruby_require_deps ruby/main.rb | ruby_require_cat -o #{t.name}"
 end
 
 file 'bytecode.main.c' => ['ruby/main.rb'] do |t|
@@ -30,7 +40,7 @@ file 'bytecode.main.c' => ['ruby/main.rb'] do |t|
 end
 
 rule '.o' => ['.c'] do |t|
-  sh "cc -Wall #{t.source} -c -o #{t.name} #{includes}"
+  sh "cc #{cflags} #{t.source} -c -o #{t.name}"
 end
 
 
