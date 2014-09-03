@@ -11,7 +11,7 @@ executables (albeit somewhat tricky).
 Original Rake has grown fat over the years & it's a quite big program
 now. Porting it to mruby is a daunting task. But if you just want
 something that is syntactically nicer than GNU Make & works w/o any
-dependencies, try minirake.
+dependencies, try minirake. :blue_heart: :yellow_heart:
 
 *This is an experiment. Do some tests before using it in your daily
  tasks.*
@@ -40,6 +40,18 @@ The idea of `-A` option comes from FreeBSD make (it's actually called
 `-V` there).
 
 
+## Enhancements To MRuby Minirake
+
+* `File.fnmatch`
+* `Dir.glob`
+* `FileList`
+* `String.pathmap`
+* Directory targets
+* General tasks can depend on file tasks
+* `desc` command
+* `-A` CLO
+* Works with mruby & cruby
+
 ## Requirements
 
 * `gem install ruby_require_inline`
@@ -61,16 +73,17 @@ Then
 	$ cd src
 	$ rake
 
-& run `minirake --help`.
+& run `minirake -h`.
 
 
 ## BUGS
 
 * `FileUtils` is missing (use `sh "blah-blah"`).
-* No parallel jobs.
-* No multitask support.
+* No multitask (parallel prerequisites) support.
 * No namespaces.
-* Doesn't work on Windows.
+* No task with arguments (make-style `minirake foo BAR=baz` args _are_
+  supported).
+* Doesn't work in Windows.
 
 
 ## License
