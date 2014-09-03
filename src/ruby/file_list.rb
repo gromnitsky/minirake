@@ -55,7 +55,7 @@ module MiniRake
     ]
 
     DELEGATING_METHODS = (ARRAY_METHODS + MUST_DEFINE - MUST_NOT_DEFINE).
-      map { |s| s.to_sym }.sort.uniq
+      map { |s| s.to_s }.sort.uniq
 
     # Now do the delegation.
     DELEGATING_METHODS.each do |sym|
