@@ -52,6 +52,8 @@ MiniRake::FileTask minirake
     bytecode.deps.o
     bytecode.main.o
     main.o
+MiniRake::Task test
+    minirake
 EOF
 
     assert_equal expected.rstrip, r.split("\n")[1..-1].join("\n")

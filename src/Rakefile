@@ -46,6 +46,10 @@ end
 
 
 
+task :test => ['minirake'] do
+  sh "ruby #{FileList['test/test_*']}"
+end
+
 desc 'clean compiled files'
 task :clean do
   sh "rm -f #{obj.join ' '} bytecode.*.c deps.rb minirake"
