@@ -2,8 +2,16 @@ require_relative 'helper'
 require_relative '../ruby/meta'
 
 class TestAcceptance < Minitest::Test
+
   def setup
     @minirake = '../minirake'
+
+    rm_rf $tmpdir
+    Dir.mkdir $tmpdir
+  end
+
+  def teardown
+    rm_rf $tmpdir
   end
 
   def test_env
@@ -86,4 +94,12 @@ EOF
                   "ruby/main.rb",
                   "ruby/meta.rb"], (eval r[2]).sort
   end
+
+  def test_directory
+    Dir.chdir $tmpdir do
+      assert_equal "mkdir -p qqq/www/eee\nok\n", `../#{@minirake} -f ../fixtures/directory.rb foo`
+      assert_equal "ok\n",`../#{@minirake} -f ../fixtures/directory.rb foo`
+    end
+  end
+
 end

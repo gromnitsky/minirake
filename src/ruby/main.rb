@@ -37,7 +37,7 @@ if !minirake_compiled? && mruby?
    'cloneable',
    'file_list',
   ].each do |idx|
-    require ['./', __dir__, idx].join '/'
+    require File.join './', __dir__, idx
   end
 end
 
@@ -270,10 +270,9 @@ module MiniRake
     # demand.
     def directory dir
       path = []
-      dir.split('/').each do |p|
+      dir.split(File::SEPARATOR).each do |p|
         path << p
-        # FIXME: replace with File.join after it'll be fixed in mruby-io
-        FileTask.define_task(path.join '/') do |t|
+        FileTask.define_task(File.join(*path)) do |t|
           sh "mkdir -p #{t.name}"
         end
       end
