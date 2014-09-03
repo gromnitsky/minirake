@@ -430,6 +430,7 @@ class App
     opts.each { |opt, value| do_option(opt, value) }
   rescue GetoptLong::Error
     # GetoptLong will still complain independently
+    exit 1
   end
 
   # Display the tasks and dependencies.
