@@ -9,7 +9,7 @@
 extern uint8_t bytecode_deps[];
 extern uint8_t bytecode_main[];
 
-void
+static void
 create_argv(mrb_state *mrb, int argc, char **argv)
 {
 	mrb_value ARGV = mrb_ary_new_capa(mrb, argc);
@@ -24,6 +24,14 @@ create_argv(mrb_state *mrb, int argc, char **argv)
 	mrb_gv_set(mrb, zero_sym, mrb_str_new_cstr(mrb, argv[0]));
 }
 
+static void
+create_minirake_const(mrb_state *mrb)
+{
+	mrb_value val = mrb_bool_value(TRUE);
+	mrb_define_global_const(mrb, "MINIRAKE", val);
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -31,6 +39,7 @@ main(int argc, char **argv)
 
 	mrb_state *mrb = mrb_open();
 	create_argv(mrb, argc, argv);
+	create_minirake_const(mrb);
 
 	uint8_t *list[] = {bytecode_deps, bytecode_main, NULL};
 	uint8_t **p = list;

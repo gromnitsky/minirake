@@ -2,21 +2,43 @@
 # Copyright (c) 2003 Jim Weirich
 # License: MIT-LICENSE
 #
-# This is a fork of mruby minirake.
+# This is a fork of minirake that ships with mruby.
 
 def mruby?
   RUBY_ENGINE == 'mruby'
 end
 
+def minirake_compiled?
+  Object.const_defined? :MINIRAKE
+end
+
+if mruby?
+  def __dir__
+    File.dirname __FILE__
+  end
+end
+
+# for cruby
 unless mruby?
   require 'getoptlong'
-  require 'fileutils'
 
-  # this will be processed by ruby_require_deps
+  # this will be processed by ruby_require_deps thus it must be static
   require_relative 'ext/string'
   require_relative 'meta'
   require_relative 'cloneable'
   require_relative 'file_list'
+end
+
+# for mruby interpreter
+if !minirake_compiled? && mruby?
+  [
+   'ext/string',
+   'meta',
+   'cloneable',
+   'file_list',
+  ].each do |idx|
+    require ['./', __dir__, idx].join '/'
+  end
 end
 
 FileList = MiniRake::FileList
@@ -388,8 +410,9 @@ class App
     when '--verbose'
       # $conf[:verbose] is true by default
     when '--version'
-      puts "#{MiniRake::Meta::NAME} #{MiniRake::Meta::VERSION}"
-      puts "#{RUBY_ENGINE} #{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
+      puts "#{MiniRake::Meta::NAME}: #{MiniRake::Meta::VERSION}"
+      puts "Compiled: #{minirake_compiled?}"
+      puts "Engine: #{RUBY_ENGINE} #{mruby? ? MRUBY_VERSION : RUBY_VERSION}"
       exit
     when '--directory'
       Dir.chdir value
