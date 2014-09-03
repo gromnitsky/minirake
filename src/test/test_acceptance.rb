@@ -1,7 +1,7 @@
 require_relative 'helper'
 require_relative '../ruby/meta'
 
-class TestDepsWalk < Minitest::Test
+class TestAcceptance < Minitest::Test
   def setup
     @minirake = '../minirake'
   end
