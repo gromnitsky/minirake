@@ -47,7 +47,8 @@ end
 
 
 task :test => ['minirake'] do
-  sh "ruby #{FileList['test/test_*']}"
+  opts = '-I. -e "ARGV.each{ |f| require f if !f.match(/^-/)}"'
+  sh "ruby #{opts} #{FileList['test/test_*']} #{ENV['TESTOPTS']}"
 end
 
 desc 'clean compiled files'
