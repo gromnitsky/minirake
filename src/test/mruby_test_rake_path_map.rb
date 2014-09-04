@@ -1,7 +1,7 @@
 # This is taken from rake repo.
 
 require './helper'
-require '../ruby/ext/file'
+require '../ruby/ext/misc'
 require '../ruby/ext/string'
 
 class TestPathamap < $testunit_class

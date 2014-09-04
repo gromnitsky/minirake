@@ -54,8 +54,9 @@ task :test => ['minirake'] do
 
   # test using mruby
   Dir.chdir 'test' do
-    opts = '-e "ARGV.each{ |f| require \"./#{f}\" if !f.match(/^-/)}"'
-    sh "../#{mruby} #{opts} #{FileList['mruby_test_*']} #{ENV['TESTOPTS']}"
+    FileList['mruby_test_*'].each do |idx|
+      sh "../#{mruby} #{idx} #{ENV['TESTOPTS']}"
+    end
   end
 end
 

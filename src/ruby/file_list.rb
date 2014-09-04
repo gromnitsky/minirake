@@ -350,7 +350,8 @@ module MiniRake
         when Regexp
           fn =~ pat
         when /[*?]/
-          File.fnmatch?(pat, fn, File::FNM_PATHNAME)
+#          File.fnmatch?(pat, fn, File::FNM_PATHNAME)
+          File.fnmatch?(pat, fn)
         else
           fn == pat
         end
