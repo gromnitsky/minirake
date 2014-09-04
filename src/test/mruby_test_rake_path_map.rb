@@ -1,9 +1,10 @@
 # This is taken from rake repo.
 
-require_relative 'helper'
-require_relative '../ruby/ext/string'
+require './helper'
+require '../ruby/ext/file'
+require '../ruby/ext/string'
 
-class TestPathamap < Minitest::Test
+class TestPathamap < $testunit_class
 
   def test_returns_self_with_no_args
     assert_equal "abc.rb", "abc.rb".pathmap
@@ -169,3 +170,5 @@ class TestPathamap < Minitest::Test
       "a/b/c/d/file.txt".pathmap("%-1d%s%3d%s%f"))
   end
 end
+
+MTest::Unit.new.run if mruby?

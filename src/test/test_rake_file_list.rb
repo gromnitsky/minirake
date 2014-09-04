@@ -1,6 +1,7 @@
 # This is taken from rake repo.
 
 require_relative 'helper'
+require_relative '../ruby/ext/file'
 require_relative '../ruby/ext/string'
 require_relative '../ruby/cloneable'
 require_relative '../ruby/file_list'

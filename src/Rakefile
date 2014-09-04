@@ -5,6 +5,7 @@ include_dirs = '-I ../mruby/mruby/include'
 cflags = "-Wall #{include_dirs}"
 archive = '../mruby/mruby/build/host/lib/libmruby.a'
 
+mruby = '../mruby/mruby/bin/mruby'
 mrbc = '../mruby/mruby/bin/mrbc'
 
 obj = FileList['*.c'].ext '.o'
@@ -47,8 +48,15 @@ end
 
 
 task :test => ['minirake'] do
+  # test using cruby
   opts = '-I. -e "ARGV.each{ |f| require f if !f.match(/^-/)}"'
   sh "ruby #{opts} #{FileList['test/test_*']} #{ENV['TESTOPTS']}"
+
+  # test using mruby
+  Dir.chdir 'test' do
+    opts = '-e "ARGV.each{ |f| require \"./#{f}\" if !f.match(/^-/)}"'
+    sh "../#{mruby} #{opts} #{FileList['mruby_test_*']} #{ENV['TESTOPTS']}"
+  end
 end
 
 desc 'clean compiled files'

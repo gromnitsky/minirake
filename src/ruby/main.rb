@@ -23,6 +23,7 @@ unless mruby?
   require 'getoptlong'
 
   # this will be processed by ruby_require_deps thus it must be static
+  require_relative 'ext/file'
   require_relative 'ext/string'
   require_relative 'meta'
   require_relative 'cloneable'
@@ -32,6 +33,7 @@ end
 # for mruby interpreter
 if !minirake_compiled? && mruby?
   [
+   'ext/file',
    'ext/string',
    'meta',
    'cloneable',

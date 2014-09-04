@@ -40,7 +40,7 @@ class String
       else
         "."
       end
-    File.join(partial_dirs)
+    File.join(*partial_dirs)
   end
   protected :pathmap_partial
 

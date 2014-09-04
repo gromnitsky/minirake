@@ -52,6 +52,7 @@ MiniRake::Task default
     minirake
 MiniRake::FileTask deps.rb
     ruby/cloneable.rb
+    ruby/ext/file.rb
     ruby/ext/string.rb
     ruby/file_list.rb
     ruby/main.rb
@@ -89,6 +90,7 @@ EOF
     assert_equal nil, (eval r[0])
     assert (eval r[1]).size >= 3
     assert_equal ["ruby/cloneable.rb",
+                  "ruby/ext/file.rb",
                   "ruby/ext/string.rb",
                   "ruby/file_list.rb",
                   "ruby/main.rb",
