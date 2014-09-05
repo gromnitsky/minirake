@@ -4,7 +4,7 @@ task :default => ['mruby', :setup, :compile]
 
 unless ENV['COMMIT']
   # last known 'good' commit id
-  ENV['COMMIT'] = 'c219c2a15eec04040144ba5cd478b5c5dff14f65'
+  ENV['COMMIT'] = '90ba47ccfe67859e3f139199da33e89137a74a41'
 end
 
 # clone repo
@@ -22,6 +22,7 @@ patch="conf.gem :core => 'mruby-eval'; conf.gembox '#{File.realpath('minirake.ge
 task :setup do
   if `grep minirake mruby/build_config.rb` == ""
     sh "sed -i \"/conf.gembox 'default'/a #{patch}\" mruby/build_config.rb"
+    sh "patch -p0 -b < mrbc.patch"
   end
 end
 

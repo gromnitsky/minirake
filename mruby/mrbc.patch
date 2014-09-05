@@ -1,0 +1,53 @@
+--- mruby/tools/mrbc/mrbc.c.orig	2014-09-06 01:30:53.149645425 +0300
++++ mruby/tools/mrbc/mrbc.c	2014-09-06 01:37:33.408118713 +0300
+@@ -26,6 +26,7 @@
+   const char *prog;
+   const char *outfile;
+   const char *initname;
++  const char *custom_file_keyword;
+   mrb_bool check_syntax : 1;
+   mrb_bool verbose      : 1;
+   mrb_bool debug_info   : 1;
+@@ -41,6 +42,7 @@
+   "-v           print version number, then turn on verbose mode",
+   "-g           produce debugging information",
+   "-B<symbol>   binary <symbol> output in C language format",
++  "-F<string>   custom __FILE__ value",
+   "--verbose    run at verbose mode",
+   "--version    print the version",
+   "--copyright  print the copyright",
+@@ -116,6 +118,19 @@
+           return -1;
+         }
+         break;
++      case 'F':
++        if (argv[i][2] == '\0' && argv[i+1]) {
++          i++;
++          args->custom_file_keyword = argv[i];
++        }
++        else {
++          args->custom_file_keyword = argv[i]+2;
++        }
++        if (*args->custom_file_keyword == '\0') {
++          fprintf(stderr, "%s: value for __FILE__ is not specified.\n", args->prog);
++          return -1;
++        }
++        break;
+       case 'c':
+         args->check_syntax = TRUE;
+         break;
+@@ -209,7 +224,13 @@
+       return mrb_nil_value();
+     }
+   }
+-  mrbc_filename(mrb, c, input);
++
++  /* set __FILE__ */
++  if (args->custom_file_keyword)
++	  mrbc_filename(mrb, c, args->custom_file_keyword);
++  else
++	  mrbc_filename(mrb, c, input);
++
+   args->idx++;
+   if (args->idx < args->argc) {
+     need_close = FALSE;
