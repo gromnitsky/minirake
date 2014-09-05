@@ -38,6 +38,34 @@ EOF
     assert_equal expected.rstrip, r.split("\n")[1..-1].join("\n")
   end
 
+  # a confusing behavior identical to rake
+  # https://github.com/jimweirich/rake/issues/290
+  def test_desc_dyn1
+    r = `#{@minirake} -f fixtures/desc_dyn_task1.rb -T`
+    assert r
+
+    expected = <<EOF
+dynamicTest
+    test task
+EOF
+
+    assert_equal expected.rstrip, r.split("\n").join("\n")
+  end
+
+  def test_desc_dyn2
+    r = `#{@minirake} -f fixtures/desc_dyn_task2.rb -T`
+    assert r
+
+    expected = <<EOF
+default
+    default task
+dynamicTest
+    a desc for a dynamic task
+EOF
+
+    assert_equal expected.rstrip, r.split("\n").join("\n")
+  end
+
   def test_prereqs
     r = `#{@minirake} -C .. -P`
     assert r
