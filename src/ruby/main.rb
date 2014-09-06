@@ -523,4 +523,4 @@ end
 
 
 
-App.new.run if __FILE__ == MiniRake::Meta::NAME
+App.new.run if __FILE__ == MiniRake::Meta::NAME || __FILE__ == $0
