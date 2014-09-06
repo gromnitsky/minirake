@@ -18,29 +18,21 @@ if mruby?
   end
 end
 
+$: << __dir__
+
 # for cruby
 unless mruby?
   require 'getoptlong'
-
-  # this will be processed by ruby_require_deps thus it must be static
-  require_relative 'ext/misc'
-  require_relative 'ext/string'
-  require_relative 'meta'
-  require_relative 'cloneable'
-  require_relative 'file_list'
 end
 
-# for mruby interpreter
-if !minirake_compiled? && mruby?
-  [
-   'ext/misc',
-   'ext/string',
-   'meta',
-   'cloneable',
-   'file_list',
-  ].each do |idx|
-    require File.join './', __dir__, idx
-  end
+if !minirake_compiled?
+  orig_dollar_zero = $0 if mruby?
+  require 'ext/misc'
+  require 'ext/string'
+  require 'meta'
+  require 'cloneable'
+  require 'file_list'
+  $0 = orig_dollar_zero if mruby?
 end
 
 FileList = MiniRake::FileList
@@ -315,7 +307,6 @@ extend MiniRake::DSL
 
 # Minirake main application object.  When invoking minirake from the
 # command line, a App object is created and run.
-# FIXME: repair __FILE__
 class App
 
   RAKEFILES = ['rakefile', 'Rakefile']
