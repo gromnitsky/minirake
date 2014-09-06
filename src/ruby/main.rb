@@ -456,14 +456,6 @@ class App
     end
   end
 
-  def self.myload name
-    if mruby?
-      load File.realpath name
-    else
-      load name
-    end
-  end
-
   # Run the minirake application.
   def run
     handle_options
@@ -488,7 +480,10 @@ class App
       end
       puts "(in #{Dir.pwd})" if $conf[:chdir]
 
-      App.myload @rakefile      # BOOM!
+      # Execute rakefile code
+      #
+      # TODO: write load_with_context(file, ctx) mrbgem
+      load File.realpath @rakefile
 
       if @show_tasks
         display_tasks
