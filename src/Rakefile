@@ -1,7 +1,8 @@
 # Please keep it valid for Rake & minirake simultaneously.
 
 name = 'minirake'
-libs = '-lm -ldl -lyaml -lpthread'
+#libs = '-lm -ldl -lyaml -lpthread'
+libs = '-lm -ldl'
 include_dirs = '-I ../mruby/mruby/include'
 cflags = "-Wall #{include_dirs}"
 archive = '../mruby/mruby/build/host/lib/libmruby.a'

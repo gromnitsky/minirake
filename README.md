@@ -2,10 +2,10 @@
 
 mruby repo contains an ultra lightweight version of Rake, called
 minirake. Unfortunately it has a couple of bugs + depends on full
-version of Ruby with stdlib.
+version of Ruby w/ stdlib.
 
 I thought that it'll be nice to have rake that doesn't require any
-Rubies installed.  With mruby it's possible to produce standalone
+Rubies installed.  W/ mruby it's possible to produce standalone
 executables (albeit somewhat tricky).
 
 Original Rake has grown fat over the years & it's a quite big program
@@ -50,7 +50,7 @@ The idea of `-A` option comes from FreeBSD make (it's actually called
 * General tasks can depend on file tasks
 * `desc` command
 * `-A` CLO
-* Works with mruby & cruby
+* Works w/ mruby & cruby
 
 ## Requirements
 
@@ -58,17 +58,29 @@ The idea of `-A` option comes from FreeBSD make (it's actually called
 * Linux
 
 
-## Compilation
+## Mruby Compilation
 
-This is a required step before creating minirake executable:
+This is a required step before creating minirake executable.
 
-	$ (cd mruby && rake COMMIT=)
+1. Edit `mruby/minirake.gembox` if you want.
 
-It will clone mruby repo, add a link to our custom gembox to it & build
-mruby. If build fails, remove `COMMIT=` string completely or add a valid
-commit id to it.
+2. Run
 
-Then
+		$ (cd mruby && rake COMMIT=)
+
+It will clone mruby repo, add a link to our custom gembox, patch mrbc &
+build mruby. If build fails, run
+
+	$ (cd mruby && rake clean)
+	$ (cd mruby && rake)
+
+E.g. remove `COMMIT=` string completely or add a valid commit id to it.
+
+*You cannot compile minirake against another cozy version of mruby. Only
+patched & w/ the custom gembox version will fly.*
+
+
+## Minirake compilation
 
 	$ cd src
 	$ rake
@@ -81,7 +93,7 @@ Then
 * `FileUtils` is missing (use `sh "blah-blah"`).
 * No multitask (parallel prerequisites) support.
 * No namespaces.
-* No task with arguments (make-style `minirake foo BAR=baz` args _are_
+* No task w/ arguments (make-style `minirake foo BAR=baz` args _are_
   supported).
 * Doesn't work in Windows.
 

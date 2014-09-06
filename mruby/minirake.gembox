@@ -17,12 +17,13 @@ MRuby::GemBox.new do |conf|
   # just useful
   conf.gem :git => 'git@github.com:ksss/mruby-ostruct.git', :branch => 'master'
   conf.gem :git => 'git@github.com:iij/mruby-tempfile.git', :branch => 'master'
-  conf.gem :git => 'git@github.com:AndrewBelt/mruby-yaml.git', :branch => 'master'
   conf.gem :git => 'git@github.com:iij/mruby-iijson.git', :branch => 'master'
-  conf.gem :git => 'git@github.com:mattn/mruby-thread.git', :branch => 'master'
+  # conf.gem :git => 'git@github.com:mattn/mruby-thread.git', :branch => 'master'
 
-  # requires openssl-libs on the host
-#  conf.gem :git => 'git@github.com:iij/mruby-digest.git', :branch => 'master'
+  # # requires libyaml on the host
+  # conf.gem :git => 'git@github.com:AndrewBelt/mruby-yaml.git', :branch => 'master'
+  # # requires openssl-libs on the host
+  # conf.gem :git => 'git@github.com:iij/mruby-digest.git', :branch => 'master'
 
   # this must be the last entry, otherwise all gems below it will be
   # compiled as .so libs.
