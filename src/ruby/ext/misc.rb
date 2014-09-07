@@ -1,53 +1,49 @@
-# cruby doesn't require this
+if RUBY_ENGINE == 'mruby'
 
-class File
-  def self.split path
-    [File.dirname(path), File.basename(path)]
-  end
-end
-
-class NilClass
-
-  def <=>(o)
-    o.is_a?(NilClass) ? 0 : nil
+  class File
+    def self.split path
+      [File.dirname(path), File.basename(path)]
+    end
   end
 
-  def =~(o)
-    nil
+  class NilClass
+
+    def <=>(o)
+      o.is_a?(NilClass) ? 0 : nil
+    end
+
+    def =~(o)
+      nil
+    end
+
   end
 
-end
+  class Array
 
-class Array
+    def =~(o)
+      nil
+    end
 
-  def =~(o)
-    nil
-  end
+    def to_ary
+      to_a
+    end
 
-  def to_ary
-    to_a
-  end
+    # this is stupid
 
-  # this is stupid
+    alias_method '__ary_eq_ORIG', '__ary_eq'
+    def __ary_eq(o)
+      o.klass == MiniRake::FileList ? __ary_eq_ORIG(o.to_a) : __ary_eq_ORIG(o)
+    rescue
+      __ary_eq_ORIG(o)
+    end
 
-  alias_method 'eq_orig', '=='
-  def ==(o)
-    o.class == MiniRake::FileList ? o.==(self) : eq_orig(o)
-  end
+    alias_method '__ary_cmp_ORIG', '__ary_cmp'
+    def __ary_cmp(o)
+      o.klass == MiniRake::FileList ? __ary_cmp_ORIG(o.to_a) : __ary_cmp_ORIG(o)
+    rescue
+      __ary_cmp_ORIG(o)
+    end
 
-  alias_method 'spaceship_orig', '<=>'
-  def <=>(o)
-    o.class == MiniRake::FileList ? spaceship_orig(o.to_a) : spaceship_orig(o)
-  end
-
-  alias_method 'minus_orig', '-'
-  def -(o)
-    o.class == MiniRake::FileList ? minus_orig(o.to_a) : minus_orig(o)
-  end
-
-  alias_method 'amp_orig', '&'
-  def &(o)
-    o.class == MiniRake::FileList ? amp_orig(o.to_a) : amp_orig(o)
   end
 
 end

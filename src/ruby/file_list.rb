@@ -178,6 +178,16 @@ module MiniRake
     end
     alias kind_of? is_a?
 
+    # the only way I could force mruby not to freak out of rvalue that
+    # is not an Array but behaves just like one.
+    def class
+      Array
+    end
+
+    def klass
+      MiniRake::FileList
+    end
+
     # Redefine * to return either a string or a new file list.
     def *(other)
       result = @items * other
