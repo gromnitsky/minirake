@@ -50,6 +50,7 @@ The idea of `-A` option comes from FreeBSD make (it's actually called
 * General tasks can depend on file tasks
 * `desc` command
 * `-A` CLO
+* `FileUtils` (look [here](https://github.com/gromnitsky/mruby-fileutils-simple) for caveats)
 * Works w/ mruby & cruby
 
 ## Requirements
@@ -90,7 +91,6 @@ patched & w/ the custom gembox version will fly.*
 
 ## BUGS
 
-* `FileUtils` is missing (use `sh "blah-blah"`).
 * No multitask (parallel prerequisites) support.
 * No namespaces.
 * No task w/ arguments (make-style `minirake foo BAR=baz` args _are_
