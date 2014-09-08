@@ -55,7 +55,7 @@ task :test => [name] do
   sh "ruby #{opts} #{FileList['test/test_*']} #{ENV['TESTOPTS']}"
 
   # test using mruby
-  Dir.chdir 'test' do
+  cd 'test' do
     FileList['mruby_test_*'].each do |idx|
       sh "../#{mruby} #{idx} #{ENV['TESTOPTS']}"
     end
@@ -64,7 +64,7 @@ end
 
 desc 'clean compiled files'
 task :clean do
-  sh "rm -f #{obj.join ' '} bytecode.*.c deps.rb #{name}"
+  rm_rf obj.concat(FileList['bytecode.*.c']).concat ['deps.rb', name]
 end
 
 v={};local_variables[0..-2].each{|i|v[i]=eval(i.to_s)};ec07bc v rescue 1

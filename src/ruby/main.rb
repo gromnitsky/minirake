@@ -23,6 +23,7 @@ $: << __dir__
 # for cruby
 unless mruby?
   require 'getoptlong'
+  require 'fileutils'
 end
 
 if !minirake_compiled?
@@ -46,8 +47,23 @@ $conf = {
   trace: false,
   debug: {
     vars: {}
-  }
+  },
+  main: self
 }
+
+def load_fileutils
+  mod = mruby? ? FileUtilsSimple : FileUtils
+
+  if $conf[:dryrun]
+    $conf[:main].send :include, mod::DryRun
+  elsif !$conf[:verbose]
+    $conf[:main].send :include, mod
+  else
+    $conf[:main].send :include, mod::Verbose
+  end
+end
+
+
 
 module MiniRake
 
@@ -479,6 +495,8 @@ class App
         end
       end
       puts "(in #{Dir.pwd})" if $conf[:chdir]
+
+      load_fileutils
 
       # Execute rakefile code
       #

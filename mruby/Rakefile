@@ -4,7 +4,7 @@ task :default => ['mruby', :setup, :compile]
 
 unless ENV['COMMIT']
   # last known 'good' commit id
-  ENV['COMMIT'] = '90ba47ccfe67859e3f139199da33e89137a74a41'
+  ENV['COMMIT'] = 'd23bc85b546af771b875f2ae3beaaa5c141683db'
 end
 
 # clone repo
@@ -36,5 +36,5 @@ end
 
 
 task :clean do
-  sh "rm -rf mruby"
+  rm_rf 'mruby'
 end

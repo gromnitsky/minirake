@@ -8,11 +8,12 @@ MRuby::GemBox.new do |conf|
   conf.gem :git => 'git@github.com:iij/mruby-pack.git', :branch => 'master'
   conf.gem :git => 'git@github.com:iij/mruby-regexp-pcre.git', :branch => 'master'
   conf.gem :git => 'git@github.com:iij/mruby-mtest.git'
-  conf.gem :git => 'git@github.com:gromnitsky/mruby-dir-glob.git'
 
   # minirake
   conf.gem :git => 'git@github.com:rubiojr/mruby-getoptlong.git', :branch => 'master'
   conf.gem :git => 'git@github.com:iij/mruby-env.git', :branch => 'master'
+  conf.gem :git => 'git@github.com:gromnitsky/mruby-dir-glob.git'
+  conf.gem :git => 'git@github.com:gromnitsky/mruby-fileutils-simple.git'
 
   # just useful
   conf.gem :git => 'git@github.com:ksss/mruby-ostruct.git', :branch => 'master'
