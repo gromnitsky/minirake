@@ -102,7 +102,7 @@ EOF
     assert_equal 0, $?
 
     r = ''
-    Dir.chdir '..' do
+    cd '..' do
       r = `rake 2>&1`
     end
 
@@ -126,9 +126,33 @@ EOF
   end
 
   def test_directory
-    Dir.chdir $tmpdir do
+    cd $tmpdir do
       assert_equal "mkdir -p qqq/www/eee\nok\n", `../#{@minirake} -f ../fixtures/directory.rb foo`
       assert_equal "ok\n",`../#{@minirake} -f ../fixtures/directory.rb foo`
+    end
+  end
+
+  def test_fileutils
+    cd $tmpdir do
+      r = `../#{@minirake} -f ../fixtures/fileutils.rb`
+      assert_equal "touch 1.txt\n", r
+      assert File.exist? "1.txt"
+
+      rm "1.txt"
+
+      r = `../#{@minirake} -f ../fixtures/fileutils.rb -q`
+      assert r.size == 0
+      assert File.exist? "1.txt"
+
+      rm "1.txt"
+
+      r = `../#{@minirake} -f ../fixtures/fileutils.rb -n`
+      assert_match(/^touch 1.txt/, r)
+      refute File.exist? "1.txt"
+
+      r = `../#{@minirake} -f ../fixtures/fileutils.rb -nq`
+      refute_match(/touch 1.txt/, r)
+      refute File.exist? "1.txt"
     end
   end
 

@@ -55,7 +55,11 @@ def load_fileutils
   mod = mruby? ? FileUtilsSimple : FileUtils
 
   if $conf[:dryrun]
-    $conf[:main].send :include, mod::DryRun
+    if $conf[:verbose]
+      $conf[:main].send :include, mod::DryRun
+    else
+      $conf[:main].send :include, mod::NoWrite
+    end
   elsif !$conf[:verbose]
     $conf[:main].send :include, mod
   else

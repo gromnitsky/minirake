@@ -17,6 +17,8 @@ if mruby?
     end
   end
 
+  include FileUtilsSimple
+
 else
   require 'fileutils'
   include FileUtils
