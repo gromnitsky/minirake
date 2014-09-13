@@ -53,11 +53,6 @@ The idea of `-A` option comes from FreeBSD make (it's actually called
 * `FileUtils` (look [here](https://github.com/gromnitsky/mruby-fileutils-simple) for caveats)
 * Works w/ mruby & cruby
 
-## Requirements
-
-* `gem install ruby_require_inline`
-* Linux
-
 
 ## Mruby Compilation
 
@@ -67,26 +62,30 @@ This is a required step before creating minirake executable.
 
 2. Run
 
-		$ (cd mruby && rake COMMIT=)
+		$ cd mruby
+		$ rake COMMIT=
 
 It will clone mruby repo, add a link to our custom gembox, patch mrbc &
 build mruby. If build fails, run
 
-	$ (cd mruby && rake clean)
-	$ (cd mruby && rake)
+	$ rake clean
+	$ rake
 
 E.g. remove `COMMIT=` string completely or add a valid commit id to it.
 
 *You cannot compile minirake against another cozy version of mruby. Only
-patched & w/ the custom gembox version will fly.*
+a patched version w/ a custom gembox will fly.*
 
 
 ## Minirake compilation
 
-	$ cd src
+	$ gem install ruby_require_inline
+
+	$ cd ../src
 	$ rake
 
-& run `minirake -h`.
+& run `minirake -h`. If the executable works, you may uninstall
+`ruby_require_inline` gem & delete mruby.
 
 
 ## BUGS
@@ -96,6 +95,9 @@ patched & w/ the custom gembox version will fly.*
 * No task w/ arguments (make-style `minirake foo BAR=baz` args _are_
   supported).
 * Doesn't work in Windows.
+
+The porting struggle is briefly described here:
+http://gromnitsky.blogspot.com/2014/09/porting-code-to-mruby.html
 
 
 ## License
